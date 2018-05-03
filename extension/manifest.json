@@ -1,0 +1,17 @@
+{
+    "manifest_version": 2,
+    "name":"chat test",
+    "version":"0.0.1",
+    "author":"Iliy",
+    "background":{
+        "scripts":["background/background.tools.js", 
+                   "background/background.js"]
+    },
+    "description":"Island chat",
+    "permissions":["tabs", "activeTab"],
+    "optional_permissions":["tabs"],
+    "browser_action":{
+        "default_popup":"popup/index.html"
+    },
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+}
