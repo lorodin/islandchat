@@ -17,6 +17,7 @@ PageModel.prototype.onEmptyListener = function(callback){
  * @param {ID TAB} id 
  */
 PageModel.prototype.setTab = function(id){
+    if(this.hasId(id)) return;
     this.tab_ids.push(id);
 }
 
@@ -30,7 +31,7 @@ PageModel.prototype.removeTab = function(id){
     this.tab_ids.splice(index, 1);
     if(this.tab_ids.length == 0)
         if(this.onEmpty != undefined) 
-            this.onEmpty();
+            this.onEmpty(this.url);
 }
 
 /**

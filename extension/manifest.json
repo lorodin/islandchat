@@ -5,7 +5,9 @@
     "author":"Iliy",
     "options_page":"options/index.html",
     "background":{
-        "scripts":[ "background/page.model.js",
+        "scripts":[ "background/app.bg.js",
+                    "background/page.model.js",
+                    "background/page.container.js",
                     "background/background.tools.js", 
                     "background/background.js"]
     },
