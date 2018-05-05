@@ -3,9 +3,11 @@
     "name":"chat test",
     "version":"0.0.1",
     "author":"Iliy",
+    "options_page":"options/index.html",
     "background":{
-        "scripts":["background/background.tools.js", 
-                   "background/background.js"]
+        "scripts":[ "background/page.model.js",
+                    "background/background.tools.js", 
+                    "background/background.js"]
     },
     "description":"Island chat",
     "permissions":["tabs", "activeTab"],
