@@ -5,7 +5,10 @@
     "author":"Iliy",
     "options_page":"options/index.html",
     "background":{
-        "scripts":[ "background/app.bg.js",
+        "scripts":[ "background/user.model.js",
+                    "background/message.model.js",
+                    "background/domain.model.js",
+                    "background/app.bg.js",
                     "background/page.model.js",
                     "background/page.container.js",
                     "background/background.tools.js", 

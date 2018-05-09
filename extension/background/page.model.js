@@ -2,6 +2,30 @@ var PageModel = function(url){
     this.url = url;
     this.tab_ids = [];
     this.messages = [];
+    this.users = [];
+    this.on = false;
+}
+
+PageModel.prototype.setMessage = function(msg){
+    this.messages.push(msg);
+}
+
+PageModel.prototype.setUser = function(user){
+    this.users.push(user);
+}
+
+PageModel.prototype.removeUser = function(user){
+    let index = this.users.indexOf(user);
+
+    if(index == -1) return;
+
+    for(let i = 0; i < this.messages.length; i++){
+        if(this.messages[i].type != 1) continue;
+        if(this.messages[i].from == user.id || this.messages[i].to == user.id)
+            this.messages.splice(i, 1);
+    }
+
+    this.users.splice(index, 1);
 }
 
 /**

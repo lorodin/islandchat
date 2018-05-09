@@ -1,6 +1,6 @@
 var UserModel = function(id, name){
     this._id = id;
-    this._name = name;
+    this._name = name
 }
 
 /** 

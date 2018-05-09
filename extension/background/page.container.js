@@ -22,7 +22,7 @@ PageContainer.prototype.createOrUpdatePage = function(id, url){
 
     if(!validUrl(url)){
         this._active_tab = null;
-        return;
+        return null;
     } 
 
     let clear_url = clearUrl(url);
@@ -32,7 +32,7 @@ PageContainer.prototype.createOrUpdatePage = function(id, url){
 
     let old_page = this._pages.find((p, i, a) => p.hasId(id));
 
-    if(page && old_page && page.url == old_page.url && page.id == old_page.id) return;
+    if(page && old_page && page.url == old_page.url && page.id == old_page.id) return page;
 
     if(old_page) old_page.removeTab(id);
 
@@ -46,16 +46,25 @@ PageContainer.prototype.createOrUpdatePage = function(id, url){
         page.onEmptyListener((url)=>{
             let index = _this._pages.indexOf(page);
             _this._pages.splice(index, 1);
-            if(_this.onRemovePage != undefined) _this.onRemovePage(url);
+            if(_this.onRemovePage != undefined) _this.onRemovePage(page);
         });
+
+        if(this.createNewPage != undefined) this.createNewPage(page);
 
         this._pages.push(page);
     }
 
     this._active_tab = {
         'tab_id': id,
-        'page': page
+        'page': page,
+        'port': null
     };
+
+    return page;
+}
+
+PageContainer.prototype.onCreateNewPage = function(callback){
+    this.createNewPage = callback;
 }
 
 PageContainer.prototype.getActiveTab = function(){
