@@ -59,25 +59,12 @@ ChromeApp.prototype.start = function(){
     })
     
     chrome.tabs.onUpdated.addListener((id, info, tab) => {
-        // logD(this.tag, 'Tab updated, id: ' + id);
-        // logD(this.tag, 'Tab info: ');
-        // logD(this.tag, info);
-        // logD(this.tag, 'Tab: ');
-        // logD(this.tag, tab);
         if(info.status && info.status == 'complete'){
             let page = _this.pageContainer.createOrUpdatePage(id, tab.url);
-            
-            if(page == null) return;
-
-            page.on = getChatStatusOnPage(page.url);
-
-            
         }
     });
     
     chrome.tabs.onActivated.addListener((tab) => {
-        // logD(this.tag, 'Tab activated: ');
-        // logD(this.tag, tab);
         _this.pageContainer.setActiveTab(tab.tabId);
     });
 
@@ -100,10 +87,54 @@ ChromeApp.prototype.start = function(){
 
             active_tab.port = port;
 
-            port.onMessage.addListener(function(msg){
-                console.log('Msg from extension: ');
-                console.log(msg);
-            })
+            port.onMessage.addListener((msg)=> _this.onMessage(msg));
         }
     )
+}
+
+ChromeApp.prototype.onMessage = function(msg){
+    if(!msg) return;
+    if(!msg.cmd) return;
+
+    console.log(msg);
+
+    switch(msg.cmd){
+        case 'init':
+            this.initPage();
+        break;
+        case 'chat-status':
+            this.toogleChatStatus(msg.data);
+        break;
+    }
+}
+
+ChromeApp.prototype.initPage = function(){
+    if(this.pageContainer.getActiveTab() == null) return;
+
+    console.log('init page');
+
+    let data = {
+        'url': this.pageContainer.getActiveTab().page.url,
+        'on': getChatStatusOnPage(this.pageContainer.getActiveTab().page.url) == "true"
+    }
+
+    console.log(data);
+
+    this.pageContainer.getActiveTab().port.postMessage({
+        'cmd': 'init',
+        'data': data
+    });
+}
+
+ChromeApp.prototype.toogleChatStatus = function(status){
+    if(this.pageContainer.getActiveTab() == null) return;
+
+    this.pageContainer.getActiveTab().page.on = status;
+
+    this.pageContainer.getActiveTab().port.postMessage({
+        'cmd': 'chat-status',
+        'data': status
+    });
+
+    setChatStatusOnPage(this.pageContainer.getActiveTab().page.url, status);
 }

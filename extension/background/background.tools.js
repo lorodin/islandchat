@@ -37,7 +37,11 @@ function validUrl(url){
 }
 
 function getChatStatusOnPage(url){
-    let chatOn = localStorage.getItem(url+'_status');
+    let chatOn = sessionStorage.getItem(url+'_status');
     if(!chatOn) chatOn = localStorage.getItem('default_chat_status');
     return chatOn;
+}
+
+function setChatStatusOnPage(url, status){
+    sessionStorage.setItem(url+'_status', status);
 }

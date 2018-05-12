@@ -1,13 +1,45 @@
+var port = chrome.runtime.connect();
+var chat_chb = document.getElementById('chat-status');
+var chat_title = document.getElementById('chat-status-txt');
+var page_url = '';
+
+chat_chb.addEventListener('click', chb_property_change);
+document.getElementById('btn-options').addEventListener('click', openOptionsPage);
+
+port.onMessage.addListener(function(msg){
+    onMessage(msg);
+})
+
+
+function onMessage(msg){
+    console.log(msg);
+    if(!msg) return;
+    if(!msg.cmd) return;
+
+    switch(msg.cmd){
+        case 'chat-status':
+            chat_chb.checked = msg.data;
+            chat_title.innerHTML = msg.data ? 'chat on' : 'chat off';
+        break;
+        case 'init':
+            chat_chb.checked = msg.data.on;
+            page_url = msg.data.url;
+            chat_title.innerHTML = msg.data.on ? 'chat on' : 'chat off';
+        break;
+    }
+}
+
+function chb_property_change(){
+    let msg = {
+        'cmd': 'chat-status',
+        'data': chat_chb.checked
+    };
+
+    port.postMessage(msg);
+}
+
 function openOptionsPage(){
     chrome.tabs.create({'url': 'options/index.html'});
 }
 
-document.getElementById('btn-options').addEventListener('click', openOptionsPage);
-
-var port = chrome.runtime.connect();
-
-port.postMessage({'msg':'msg from extension'});
-
-port.onMessage.addListener(function(msg){
-    console.log(msg);
-})
+port.postMessage({'cmd': 'init'});
