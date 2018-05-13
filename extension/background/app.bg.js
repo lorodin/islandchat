@@ -8,6 +8,11 @@ var ChromeApp = function(server){
     let default_chat_status = localStorage.getItem('default_chat_status');
 
     if(!default_chat_status) localStorage.setItem('default_chat_status', false);
+    
+    chrome.tabs.getAllInWindow( null, function( tabs ){
+        console.log("Initial tab count: " + tabs.length);
+        _this.num_tabs = tabs.length;
+    });
 
     this.pageContainer.onRemovePageListener((page) => {
         logD(_this.tag, 'Page "' + page.url + '" deleted!');
@@ -127,9 +132,19 @@ ChromeApp.prototype.testAction = function(msg){
 ChromeApp.prototype.start = function(){
     let _this = this;
     chrome.tabs.onRemoved.addListener((id) => {
+        _this.num_tabs--;
+        console.log('Num tabs: ' + _this.num_tabs);
         _this.pageContainer.removeTabFromPage(id);
+        if(_this.num_tabs == 0){
+            // close connection
+            _this.server.exit();
+        }
     })
     
+    chrome.tabs.onCreated.addListener(()=>{
+        _this.num_tabs++;
+    })
+
     chrome.tabs.onUpdated.addListener((id, info, tab) => {
         if(info.status && info.status == 'complete'){
             let page = _this.pageContainer.createOrUpdatePage(id, tab.url);
@@ -165,9 +180,8 @@ ChromeApp.prototype.start = function(){
         }
     );
 
-    this.server.getUserID((user_id)=>{
-        console.log('new user id: ' + user_id);
-        _this._user.id = user_id;
+    this.server.registerUser(this._user.name, (data)=>{
+        _this._user.id = data.user_id;
     })
 }
 
