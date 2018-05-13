@@ -1,6 +1,8 @@
 var port = chrome.runtime.connect();
 var chat_chb = document.getElementById('chat-status');
 var chat_title = document.getElementById('chat-status-txt');
+var user_name = document.getElementById('user-name');
+
 var page_url = '';
 
 chat_chb.addEventListener('click', chb_property_change);
@@ -25,6 +27,13 @@ function onMessage(msg){
             chat_chb.checked = msg.data.on;
             page_url = msg.data.url;
             chat_title.innerHTML = msg.data.on ? 'chat on' : 'chat off';
+            user_name.innerHTML = msg.data.name;
+        break;
+        case 'register-page':
+            console.log(msg.data);
+        break;
+        case 'change-name':
+            user_name.innerHTML = msg.data.name;
         break;
     }
 }

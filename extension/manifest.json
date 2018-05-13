@@ -5,7 +5,9 @@
     "author":"Iliy",
     "options_page":"options/index.html",
     "background":{
-        "scripts":[ "background/user.model.js",
+        "scripts":[ "background/libs/socket.io.js",
+                    "background/server.bg.js",
+                    "background/user.model.js",
                     "background/message.model.js",
                     "background/domain.model.js",
                     "background/app.bg.js",
