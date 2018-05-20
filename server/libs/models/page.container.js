@@ -51,6 +51,13 @@ class PageContainer{
         }
     }
 
+    isEmpty(url){
+        let page = this.pages.find((v, i, a) => url === v.url);
+        if(!page) return false;
+
+        return page.clients.length == 0;
+    }
+
     registerNewPage(url, client, clinets_callback, callback, er){
         url = this.clearUrl(url);
         
@@ -64,6 +71,8 @@ class PageContainer{
         let page = this.pages.find((v, i, a) => v.url === url);
 
         if(page){
+            console.log('Page finded:');
+            console.log(page);
             let find_client = page.clients.find((v, i, a) => v.id == client.id);
 
             if(find_client) {

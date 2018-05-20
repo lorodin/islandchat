@@ -61,7 +61,7 @@ class Server{
                         })
                     });
                 }
-                
+
                 _this.removeClient(client);
                 
                 delete _this.sockets[client.id];
@@ -71,19 +71,17 @@ class Server{
                 socket.disconnect();
             });
 
-            socket.on('register_user', function(data){
-                if(data == undefined || data.name === undefined) data = JSON.parse(data);
+            socket.on('register_user', function(req){
+                if(req == undefined || req.data === undefined) req = JSON.parse(req);
 
                 console.log('register new user');
-                console.log(data);
-                console.log(data.time);
+                console.log(req);
+                console.log(req.time);
 
                 client.setId(uniqid());
-                client.setName(data.name);
-                client.time = data.time;
-                console.log(Date.now() / 1000);
-
-                client.time_z = Math.ceil((client.time - (Date.now() / 1000)) / (3600));
+                client.setName(req.data.name);
+                
+                client.time_z = Math.ceil((req.time - (Date.now() / 1000)) / (3600));
 
                 _this.clients.push(client);
 
@@ -98,19 +96,20 @@ class Server{
                 socket.emit('register_user_complete', new Responce('OK', client, ''));
             });
 
-            socket.on('register_page', function(url){
+            socket.on('register_page', function(req){
+                if(req == undefined || req.data === undefined) req = JSON.parse(req);
+
                 console.log(JSON.colorStringify({
                     'cmd': 'register_new_page',
-                    'url': url,
-                    'client': client
+                    'req': req
                 }));
                 
                 _this.pageContainer
-                     .registerNewPage(url, client, 
+                     .registerNewPage(req.data, client, 
                         (c)=>{
                             if(!_this.sockets[c.id]) return;
                             _this.sockets[c.id].emit('set_new_client', new Responce('OK', {
-                                'url': url,
+                                'url': req.data,
                                 'client': {
                                     'name': client.name,
                                     'id': client.id
@@ -125,20 +124,26 @@ class Server{
                             
                             _this.client_pages[client.id].push(page.url);
 
-                            _this.sockets[client.id].emit('register_page_complete', new Responce('OK', page, 'ok'));
+                            _this.sockets[client.id].emit('register_page_complete', 
+                                new Responce('OK', page, 'ok'));
                         },
                         (msg)=>{
                             if(!_this.sockets[client.id]) return;
-                            _this.sockets[client.id].emit('register_page_complete', new Responce('ERROR', null, msg));
+                            _this.sockets[client.id].emit('register_page_complete', 
+                                new Responce('ERROR', null, msg));
                         }
                     );
             });
 
-            socket.on('unregister_page', function(url){
+            socket.on('unregister_page', function(req){
+                if(req == undefined || req.data === undefined) req = JSON.parse(req);
+                
                 logJson({
                     'cmd': 'unregister_page',
-                    'url': url
+                    'req': req
                 });
+
+                let url = req.data;
 
                 _this.pageContainer.unregisterPage(url, client, 
                     (c) => {
@@ -159,6 +164,7 @@ class Server{
 
                         if(index != -1) _this.client_pages[client.id].splice(index, 1);
 
+
                         _this.sockets[client.id].emit('unregister_page_complete', 
                                                       new Responce('OK', url, 'ok'));
                     },
@@ -170,10 +176,12 @@ class Server{
                 )
             });
 
-            socket.on('change_name', function(data){
+            socket.on('change_name', function(req){
+                if(req == undefined || req.data === undefined) req = JSON.parse(req);
+
                 logJson({
                     'cmd': 'change_name',
-                    'data': data
+                    'req': req,
                 });
 
                 if(!_this.client_pages[client.id]) return;
@@ -184,17 +192,18 @@ class Server{
                         _this.sockets[c.id].emit('change_client_name', new Responce('OK',{
                             'url': url,
                             'client': {
-                                'name': data,
+                                'name': req.data,
                                 'id': client.id
                             }
                         }, 'ok'));
                     });
                 });
 
-                client.setName(data);
+                client.setName(req.data);
 
                 if(_this.sockets[client.id]) 
-                    _this.sockets[client.id].emit('change_name_complete', new Responce('OK', data, 'ok'));
+                    _this.sockets[client.id].emit('change_name_complete', 
+                    new Responce('OK', req.data, 'ok'));
             });
 
         });

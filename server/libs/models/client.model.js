@@ -4,7 +4,6 @@ class ClientModel {
         this.name = 'Guest';
         this.socket = null;
         this.time_z = 0;
-        this.time = null;
     }
 
     setSocket(socket){
