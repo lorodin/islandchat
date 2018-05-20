@@ -6,6 +6,7 @@ var Server = function(protocol, host, port){
 Server.prototype.registerUser = function(user_name, callback){
     this._updateListener('register_user_complete', callback);
     this.socket.emit('register_user', { 'name': user_name });
+    console.log('register user from bg.server, user_name: ' + user_name);
 }
 
 Server.prototype.changeName = function(new_name, callback){

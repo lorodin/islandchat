@@ -167,6 +167,7 @@ ChromeApp.prototype.start = function(){
         name: user_name
     }
 
+    console.log('User name: ' + user_name);
 
     chrome.runtime.onConnect.addListener(
         function(port){
@@ -181,6 +182,8 @@ ChromeApp.prototype.start = function(){
     );
 
     this.server.registerUser(this._user.name, (data)=>{
+        console.log('register_user');
+        console.log(data);
         _this._user.id = data.user_id;
     })
 }
