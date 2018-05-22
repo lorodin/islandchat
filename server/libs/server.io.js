@@ -206,6 +206,31 @@ class Server{
                     new Responce('OK', req.data, 'ok'));
             });
 
+            socket.on('send_message', function(req){
+                if(req == undefined || req.data == undefined) req = JSON.parse(req);
+
+                logJson({
+                    'cmd': 'send_message',
+                    'req': req
+                });
+
+                let msg = req.data;
+
+                msg.time = Math.ceil(Date.now() / 1000);
+
+                if(req.data.to === ''){
+                    msg.to = 'room';
+                    _this.pageContainer.getClientsFromURL(msg.url, (c)=>{
+                        if(_this.sockets[c.id]){
+                            _this.sockets[c.id].emit("new_message", new Responce('OK', msg, 'ok'));
+                        }
+                    });
+                }else if(_this.sockets[req.data.from] && _this.sockets[req.data.to]){
+                    let resp = new Responce('OK', msg, 'ok');
+                    _this.sockets[req.data.from].emit("new_message", resp);
+                    _this.sockets[req.data.to].emit("new_message", resp);
+                }
+            })
         });
     }
 }
