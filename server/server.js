@@ -8,7 +8,7 @@ const Server = require('./libs/server.io');
 
 
 const host = 'localhost';
-const port = 8080;
+const port = process.env.port || 8080;
 
 http.listen(port);
 
